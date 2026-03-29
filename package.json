@@ -1,5 +1,5 @@
 {
-  "name": "monkeytui",
+  "name": "typetui",
   "module": "index.ts",
   "type": "module",
   "private": true,
