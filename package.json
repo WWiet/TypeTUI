@@ -1,8 +1,19 @@
 {
   "name": "typetui",
+  "version": "0.1.0",
+  "description": "A MonkeyType-inspired typing test for the terminal using OpenTUI.",
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "bin": {
+    "typetui": "bin/typetui",
+    "tt": "bin/tt"
+  },
+  "scripts": {
+    "dev": "bun run index.ts",
+    "check": "bunx tsc --noEmit",
+    "install:local": "npm link"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

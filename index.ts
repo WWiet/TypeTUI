@@ -1,9 +1,12 @@
 import { ASCIIFontRenderable, BoxRenderable, StyledText, TextRenderable, bg, bold, createCliRenderer, fg, type KeyEvent, type TextChunk } from "@opentui/core"
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises"
+import { homedir } from "node:os"
+import { join } from "node:path"
 
-const STORAGE_PATH = ".typing-test-settings.json"
-const THEME_EXPORT_DIR = ".typing-themes"
-const PROMPT_WIDTH = 78
+const CONFIG_DIR = join(homedir(), ".config", "typetui")
+const STORAGE_PATH = join(CONFIG_DIR, "settings.json")
+const THEME_EXPORT_DIR = join(CONFIG_DIR, "themes")
+const PROMPT_WIDTH = 72
 const PROMPT_VIEWPORT_LINES = 3
 const DEFAULT_WORD_COUNT = 30
 const TIMED_WORD_POOL = 220
@@ -240,6 +243,17 @@ const wordsViewport = new BoxRenderable(renderer, {
   overflow: "hidden",
 })
 
+const wordsFrame = new BoxRenderable(renderer, {
+  width: "100%",
+  flexDirection: "column",
+  border: true,
+  borderStyle: "rounded",
+  paddingX: 3,
+  paddingY: 1,
+  marginTop: 1,
+  marginBottom: 1,
+})
+
 const wordsDisplay = new TextRenderable(renderer, {
   content: "",
   width: "100%",
@@ -259,11 +273,12 @@ const statsDisplay = new TextRenderable(renderer, {
 
 const helperDisplay = new TextRenderable(renderer, {
   content: "",
-  width: "100%",
+  width: 64,
   height: 2,
   wrapMode: "word",
   selectable: false,
-  marginTop: 1,
+  marginTop: 3,
+  alignSelf: "center",
 })
 
 const content = new BoxRenderable(renderer, {
@@ -303,7 +318,8 @@ const colorPickerHintDisplay = createModalText(renderer, 1)
 
 content.add(progressDisplay)
 wordsViewport.add(wordsDisplay)
-content.add(wordsViewport)
+wordsFrame.add(wordsViewport)
+content.add(wordsFrame)
 content.add(statsDisplay)
 content.add(helperDisplay)
 
@@ -526,6 +542,7 @@ function applyTheme(): void {
   wordsDisplay.fg = colors().muted
   content.backgroundColor = colors().panel
   app.backgroundColor = colors().background
+  wordsFrame.borderColor = colors().border
   settingsModal.backgroundColor = colors().modal
   settingsModal.borderColor = colors().border
   themeEditorModal.backgroundColor = colors().modal
@@ -1426,6 +1443,7 @@ function destroyApp(): void {
 }
 
 async function loadPersistedState(): Promise<PersistedState | null> {
+  await mkdir(CONFIG_DIR, { recursive: true })
   const file = Bun.file(STORAGE_PATH)
 
   if (!(await file.exists())) {
@@ -1449,6 +1467,7 @@ async function loadPersistedState(): Promise<PersistedState | null> {
 }
 
 async function persistState(): Promise<void> {
+  await mkdir(CONFIG_DIR, { recursive: true })
   const payload: PersistedState = {
     settings,
     customThemes,

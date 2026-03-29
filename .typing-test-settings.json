@@ -1,74 +1,9 @@
 {
   "settings": {
-    "mode": "words",
+    "mode": "time",
     "wordCount": 30,
-    "timeSeconds": 30,
-    "theme": "alliesfav"
+    "timeSeconds": 15,
+    "theme": "rainbowNight"
   },
-  "customThemes": {
-    "my-theme": {
-      "background": "#241512",
-      "panel": "#241512",
-      "muted": "#f6d78b",
-      "preview": "#7a5a4f",
-      "text": "#fff4dc",
-      "completed": "#ffb8c8",
-      "danger": "#ff4f6d",
-      "caretBg": "#fff4dc",
-      "caretText": "#241512",
-      "accent": "#ff9fba",
-      "success": "#ffd27f",
-      "help": "#b8aca3",
-      "modal": "#2d1a16",
-      "border": "#ff9fba"
-    },
-    "purplenurple": {
-      "background": "#ffd166",
-      "panel": "#0d1117",
-      "muted": "#fff4dc",
-      "preview": "#58c4dd",
-      "text": "#c9b7ff",
-      "completed": "#ffb8c8",
-      "danger": "#ff4f6d",
-      "caretBg": "#b76ef2",
-      "caretText": "#c9b7ff",
-      "accent": "#8b949e",
-      "success": "#fff4dc",
-      "help": "#b8aca3",
-      "modal": "#0d1117",
-      "border": "#b76ef2"
-    },
-    "purplenurple-2": {
-      "background": "#ffd166",
-      "panel": "#0d1117",
-      "muted": "#fff4dc",
-      "preview": "#58c4dd",
-      "text": "#c9b7ff",
-      "completed": "#ffb8c8",
-      "danger": "#ff4f6d",
-      "caretBg": "#b76ef2",
-      "caretText": "#c9b7ff",
-      "accent": "#8b949e",
-      "success": "#fff4dc",
-      "help": "#b8aca3",
-      "modal": "#0d1117",
-      "border": "#b76ef2"
-    },
-    "alliesfav": {
-      "background": "#fffc79",
-      "panel": "#aaa659",
-      "muted": "#f6d78b",
-      "preview": "#7a5a4f",
-      "text": "#fff4dc",
-      "completed": "#ffb8c8",
-      "danger": "#ff4f6d",
-      "caretBg": "#fff4dc",
-      "caretText": "#241512",
-      "accent": "#ff9fba",
-      "success": "#ffd27f",
-      "help": "#b8aca3",
-      "modal": "#2d1a16",
-      "border": "#ff9fba"
-    }
-  }
+  "customThemes": {}
 }

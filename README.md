@@ -22,10 +22,35 @@ TypeTUI is a MonkeyType-inspired typing test built as a terminal UI with `@opent
 bun install
 ```
 
+To use it like a command from anywhere, install it globally from the project folder:
+
+```bash
+npm link
+```
+
+That gives you these commands:
+
+- `typetui`
+- `tt`
+
+After you make code changes, reinstall the local CLI with:
+
+```bash
+bun run install:local
+```
+
+Because `npm link` creates a global symlink to your working folder, most code changes are picked up immediately. You usually only need to run it again if you change package metadata or the CLI bin setup.
+
 ## Run
 
 ```bash
 bun run index.ts
+```
+
+Or, after global install:
+
+```bash
+typetui
 ```
 
 ## Main Controls
@@ -77,8 +102,9 @@ Hex input accepts:
 
 ## Theme Import / Export
 
-- Exported theme files are written to `.typing-themes/`
-- App settings and saved custom themes are stored in `.typing-test-settings.json`
+- Exported theme files are written to `~/.config/typetui/themes/`
+- App settings and saved custom themes are stored in `~/.config/typetui/settings.json`
+- This config directory is intended to also hold future custom test data
 
 ## Development
 
@@ -86,4 +112,12 @@ Type-check the project with:
 
 ```bash
 bunx tsc --noEmit
+```
+
+Helpful scripts:
+
+```bash
+bun run dev
+bun run check
+bun run install:local
 ```
