@@ -21,8 +21,7 @@
         "typescript": "^6.0.2"
     },
     "dependencies": {
-        "@opentui/core": "^0.1.92",
-        "jimp": "^1.6.0"
+        "@opentui/core": "^0.1.92"
     },
     "overrides": {
         "file-type": "^16.5.4"

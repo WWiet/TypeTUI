@@ -6,7 +6,6 @@
       "name": "monkeytui",
       "dependencies": {
         "@opentui/core": "latest",
-        "jimp": "latest",
       },
       "devDependencies": {
         "@types/bun": "latest",
