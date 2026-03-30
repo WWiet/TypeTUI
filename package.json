@@ -1,26 +1,30 @@
 {
-  "name": "typetui",
-  "version": "0.1.0",
-  "description": "A MonkeyType-inspired typing test for the terminal using OpenTUI.",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "bin": {
-    "typetui": "bin/typetui",
-    "tt": "bin/tt"
-  },
-  "scripts": {
-    "dev": "bun run index.ts",
-    "check": "bunx tsc --noEmit",
-    "install:local": "npm link"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@opentui/core": "^0.1.90"
-  }
+    "name": "typetui",
+    "version": "0.1.0",
+    "description": "A MonkeyType-inspired typing test for the terminal using OpenTUI.",
+    "module": "index.ts",
+    "type": "module",
+    "private": true,
+    "bin": {
+        "typetui": "bin/typetui",
+        "tt": "bin/tt"
+    },
+    "scripts": {
+        "dev": "bun run index.ts",
+        "check": "bunx tsc --noEmit",
+        "install:local": "npm link"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.3.11"
+    },
+    "peerDependencies": {
+        "typescript": "^6.0.2"
+    },
+    "dependencies": {
+        "@opentui/core": "^0.1.92",
+        "jimp": "^1.6.0"
+    },
+    "overrides": {
+        "file-type": "^16.5.4"
+    }
 }
