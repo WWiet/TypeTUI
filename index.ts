@@ -7,7 +7,7 @@ const CONFIG_DIR = join(homedir(), ".config", "typetui")
 const STORAGE_PATH = join(CONFIG_DIR, "settings.json")
 const THEME_EXPORT_DIR = join(CONFIG_DIR, "themes")
 const PROMPT_WIDTH = 72
-const PROMPT_VIEWPORT_LINES = 3
+const PROMPT_VIEWPORT_LINES = 2
 const DEFAULT_WORD_COUNT = 30
 const TIMED_WORD_POOL = 220
 const WORD_COUNT_OPTIONS = [30, 50, 100] as const
@@ -233,69 +233,104 @@ const progressDisplay = new ASCIIFontRenderable(renderer, {
   text: "0",
   font: "block",
   alignSelf: "center",
-  marginBottom: 1,
+  marginTop: 1,
+})
+
+const header = new BoxRenderable(renderer, {
+  width: "100%",
+  position: "absolute",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  paddingTop: 3,
+  paddingBottom: 0,
+})
+
+const main = new BoxRenderable(renderer, {
+  width: "100%",
+  flexGrow: 1,
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  paddingX: 2,
+})
+
+const footer = new BoxRenderable(renderer, {
+  width: "100%",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  paddingBottom: 2,
 })
 
 const wordsViewport = new BoxRenderable(renderer, {
-  width: "100%",
+  width: PROMPT_WIDTH,
   height: PROMPT_VIEWPORT_LINES,
   flexDirection: "column",
   overflow: "hidden",
+  alignSelf: "center",
 })
 
 const wordsFrame = new BoxRenderable(renderer, {
   width: "100%",
+  minHeight: 8,
+  height: 10,
   flexDirection: "column",
   border: true,
   borderStyle: "rounded",
-  paddingX: 3,
+  paddingX: 2,
   paddingY: 1,
-  marginTop: 1,
-  marginBottom: 1,
+  marginTop: 0,
+  marginBottom: 2,
+  justifyContent: "center",
+  alignItems: "center",
 })
 
 const wordsDisplay = new TextRenderable(renderer, {
   content: "",
-  width: "100%",
+  width: PROMPT_WIDTH,
   height: PROMPT_VIEWPORT_LINES,
   wrapMode: "none",
   selectable: false,
+  alignSelf: "center",
 })
 
 const statsDisplay = new TextRenderable(renderer, {
   content: "",
-  width: "100%",
+  width: 72,
   height: 2,
   wrapMode: "word",
   selectable: false,
   marginTop: 1,
+  alignSelf: "center",
 })
 
 const helperDisplay = new TextRenderable(renderer, {
   content: "",
-  width: 64,
+  width: 72,
   height: 2,
   wrapMode: "word",
   selectable: false,
-  marginTop: 3,
+  marginTop: 1,
   alignSelf: "center",
 })
 
 const content = new BoxRenderable(renderer, {
-  width: 86,
-  maxWidth: "100%",
+  width: "100%",
+  maxWidth: 84,
   flexDirection: "column",
   justifyContent: "center",
-  alignItems: "stretch",
+  alignItems: "center",
   paddingX: 2,
-  paddingY: 1,
+  paddingY: 0,
 })
 
 const app = new BoxRenderable(renderer, {
   width: "100%",
   height: "100%",
-  justifyContent: "center",
-  alignItems: "center",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  alignItems: "stretch",
 })
 
 const settingsOverlay = createOverlay(renderer, 10)
@@ -316,12 +351,13 @@ const colorPickerTitleDisplay = createModalText(renderer)
 const colorPickerBodyDisplay = createModalText(renderer, 1)
 const colorPickerHintDisplay = createModalText(renderer, 1)
 
-content.add(progressDisplay)
+header.add(progressDisplay)
 wordsViewport.add(wordsDisplay)
 wordsFrame.add(wordsViewport)
 content.add(wordsFrame)
 content.add(statsDisplay)
-content.add(helperDisplay)
+main.add(content)
+footer.add(helperDisplay)
 
 settingsModal.add(settingsTitleDisplay)
 settingsModal.add(settingsBodyDisplay)
@@ -338,7 +374,9 @@ colorPickerModal.add(colorPickerBodyDisplay)
 colorPickerModal.add(colorPickerHintDisplay)
 colorPickerOverlay.add(colorPickerModal)
 
-app.add(content)
+app.add(header)
+app.add(main)
+app.add(footer)
 app.add(settingsOverlay)
 app.add(themeEditorOverlay)
 app.add(colorPickerOverlay)
@@ -614,18 +652,22 @@ function buildStyledPrompt(currentState: TestState): StyledText {
   const wordRanges = getWordRanges(currentState.words)
   const wrappedLines = wrapWordRanges(currentState.words, PROMPT_WIDTH)
   const activeLineIndex = getCurrentLineIndex(currentState)
-  const lineIndexes = promptAnimation == null
-    ? [activeLineIndex - 1, activeLineIndex, activeLineIndex + 1]
-    : [promptAnimation.fromLineIndex, promptAnimation.toLineIndex, promptAnimation.toLineIndex + 1]
+  const lineIndexes = [activeLineIndex, activeLineIndex + 1]
 
   const chunks: TextChunk[] = []
 
   for (let viewIndex = 0; viewIndex < lineIndexes.length; viewIndex += 1) {
     const lineIndex = lineIndexes[viewIndex] ?? -1
-    const tone = viewIndex === 1 ? "active" : "preview"
+    const tone = viewIndex === 0 ? "active" : "preview"
+
+    const lineChunks: TextChunk[] = []
 
     if (lineIndex >= 0 && lineIndex < wrappedLines.length) {
-      chunks.push(...buildStyledLine(currentState, wrappedLines[lineIndex] ?? [], wordRanges, tone))
+      lineChunks.push(...buildStyledLine(currentState, wrappedLines[lineIndex] ?? [], wordRanges, tone))
+    }
+
+    if (lineChunks.length > 0) {
+      chunks.push(...lineChunks)
     }
 
     if (viewIndex < lineIndexes.length - 1) {
@@ -758,12 +800,15 @@ function getCurrentLineIndex(currentState: TestState): number {
 
 function buildStats(currentState: TestState): StyledText {
   if (!currentState.completed) {
-    return line(colors().help, "finish the test to see wpm and accuracy")
+    return line(colors().help, centerText("finish the test to see wpm and accuracy", 72))
   }
 
   const stats = calculateStats(currentState)
+  const statsText = `WPM ${stats.wpm.toFixed(1)}   ACC ${stats.accuracy.toFixed(1)}%   TIME ${stats.durationSeconds.toFixed(1)}s`
+  const leftPadding = " ".repeat(Math.max(Math.floor((72 - statsText.length) / 2), 0))
 
   return new StyledText([
+    fg(colors().help)(leftPadding),
     fg(colors().help)("WPM "),
     fg(colors().success)(stats.wpm.toFixed(1)),
     fg(colors().help)("   ACC "),
@@ -775,10 +820,10 @@ function buildStats(currentState: TestState): StyledText {
 
 function buildHelper(currentState: TestState): StyledText {
   if (currentState.completed) {
-    return line(colors().help, "done - enter restart, ctrl+r reset, ctrl+s settings, esc quit")
+    return line(colors().help, centerText("done - enter restart, ctrl+r reset, ctrl+s settings, esc quit", 72))
   }
 
-  return line(colors().help, "type the prompt - ctrl+r reset, ctrl+s settings")
+  return line(colors().help, centerText("type the prompt - ctrl+r reset, ctrl+s settings", 72))
 }
 
 function calculateStats(currentState: TestState): TestStats {
@@ -1320,6 +1365,15 @@ function formatThemeFieldName(field: ThemeField): string {
 
 function line(color: string, content: string): StyledText {
   return new StyledText([fg(color)(content)])
+}
+
+function centerText(content: string, width: number): string {
+  if (content.length >= width) {
+    return content
+  }
+
+  const leftPadding = Math.floor((width - content.length) / 2)
+  return `${" ".repeat(leftPadding)}${content}`
 }
 
 function canDeleteCurrentTheme(): boolean {
